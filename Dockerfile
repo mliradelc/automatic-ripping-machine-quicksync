@@ -34,6 +34,10 @@ RUN apt-get update && \
 # - libva-drm2: DRM backend used with /dev/dri/renderD128
 # - libvpl2: Intel oneVPL runtime used by modern QSV applications
 # - libmfx-gen1.2: Intel oneVPL Gen1.2 runtime
+# - libmfx1: legacy Intel Media SDK runtime. Required on pre-Ice-Lake iGPUs
+#   (e.g. Kaby Lake HD 630): the oneVPL Gen runtime alone leaves HandBrake with
+#   no usable MFX implementation, so `qsv_h264` never appears in --help and
+#   encodes fail with "MFX session error -9". Harmless on newer hardware.
 # See also: https://dgpu-docs.intel.com/installation-guides/installing-packages-from-the-intel-ppa.html
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
@@ -43,6 +47,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt update && \
     libva-x11-2 \
     libva-wayland2 \
     libmfx-gen1.2 \
+    libmfx1 \
     vainfo \
     libvpl2 \
     && apt-get clean && \
