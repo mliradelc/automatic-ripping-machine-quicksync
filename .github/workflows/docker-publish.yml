@@ -40,8 +40,11 @@ jobs:
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          # Forks get a read-only GITHUB_TOKEN, which cannot push packages.
+          # GHCR_PAT is a classic PAT with write:packages; fall back to the
+          # default token for the upstream repo, where it works as-is.
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Generate image metadata
         id: meta
